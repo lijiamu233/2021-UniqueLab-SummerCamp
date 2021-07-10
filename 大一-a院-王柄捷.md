@@ -18,3 +18,4 @@
 - 安装配置ArchLinux
 - 学习并使用useradd、groupadd命令
 - 学习vim文本编辑器的使用，并写了一个简单的小链表用gcc编译
+- 科学上网，安装加速器成功
