@@ -1,0 +1,2 @@
+shell: ./main.c ./cmds/cmd.c ./builtin/pwd.c ./builtin/echo.c ./builtin/ls.c ./cmds/builtin.c
+	gcc ./main.c ./cmds/cmd.c ./builtin/pwd.c ./builtin/echo.c ./builtin/ls.c ./cmds/builtin.c ./builtin/cd.c -o ./shell -lreadline
