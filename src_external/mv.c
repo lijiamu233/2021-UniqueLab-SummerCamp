@@ -8,7 +8,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-void execute_cp(char *src, char *dst)
+void execute_mv(char *src, char *dst)
 {
     int fd_src, fd_dst,l;
     char ch;
@@ -57,6 +57,6 @@ void main(int argc, char **argv)
         while (p = strchr(p + 1, '/'))
             ans = p;
         strcat(dst, ans + 1); ///以上部分合成拷贝终点名称
-        execute_cp(argv[i], dst);
+        execute_mv(argv[i], dst);
     }
 }

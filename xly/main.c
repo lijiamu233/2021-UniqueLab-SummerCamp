@@ -29,6 +29,8 @@ int main()
             argv[i] = NULL;
         }
         p_cmdline = readline("mysh> ");
+        if (p_cmdline == NULL)
+            exit(0);
         parseline(p_cmdline, argv);
         if (!argv[0])
             continue;
