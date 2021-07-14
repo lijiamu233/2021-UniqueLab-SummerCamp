@@ -4,6 +4,10 @@ int ls(int argc,char** argv) {
     DIR *dir;
     struct dirent *rent;
     struct stat fpstat;
+    struct passwd *pwd;
+    struct group *grp;
+    struct tm *fatime,*fmtime;
+    time_t ftime;
     char str[256];
     char res[256][50];
     static char *perm[]={"---","--x","-w-","-wx","r--","r-x","rw-","rwx"};
@@ -36,14 +40,21 @@ int ls(int argc,char** argv) {
         }
         for(int i=0;i<num;i++) {
             if(stat(res[i],&fpstat)!=-1) {
+                mask = 0700;
                 for(int k=3;k;--k) {
                     printf("%3s",perm[(fpstat.st_mode&mask)>>(k-1)*3]);   //ERROR!!!
                     mask>>=3;
                 }
+                pwd = getpwuid(fpstat.st_uid);
+                grp = getgrgid(fpstat.st_gid);
+                //ftime = localtime(fpstat.st_ctim.tv_sec);
+                printf(" %d %s %s %5d ",fpstat.st_nlink,pwd->pw_name,grp->gr_name,fpstat.st_size);
+                //printf("%d %d %d:%d ",fatime->tm_mon,fatime->tm_mday,fatime->tm_hour,fatime->tm_min);
+                printf("%s",res[i]);
                 printf("\n");
             }
         }
     }
-    } 
+    } else printf("ERROR:为定义的选项！\n");
     closedir(dir);
 }

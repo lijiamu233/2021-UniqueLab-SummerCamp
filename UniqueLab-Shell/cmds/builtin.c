@@ -12,6 +12,7 @@ int FindBuiltinCmd(char* cmd) {
     if(strcmp(cmd,"touch")==0) return 6;
     if(strcmp(cmd,"mkdir")==0) return 7;
     if(strcmp(cmd,"mkdir")==0) return 8;
+    if(strcmp(cmd,"rm")==0) return 9;
     else return 0;
 }
 
@@ -77,4 +78,20 @@ int cp(int argc,char** argv) {
         return 1;
     }
     
+}
+
+int rm(int argc,char** argv) {
+    if(argv[1][0]!='.'&&argv[1][0]!='/') {
+        DestProg(argv,1);
+    }
+    if(access(argv[1],F_OK)==-1) {
+        printf("ERROR:rm找不到文件！\n");
+        return 1;
+    }
+    remove(argv[1]);
+    return 0;
+}
+
+int removedir(int argc,char** argv) {
+    ;
 }

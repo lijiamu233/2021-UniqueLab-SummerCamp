@@ -12,6 +12,9 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <dirent.h>
+#include <fcntl.h>
+#include <pwd.h>
+#include <grp.h>
 
 #include "./cmds/builtin.h"
 #include "./cmds/cmd.h"

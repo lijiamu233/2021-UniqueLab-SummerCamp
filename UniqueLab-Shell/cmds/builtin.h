@@ -18,5 +18,7 @@ BUILTIN_CMD cd;
 BUILTIN_CMD echo;
 BUILTIN_CMD touch;
 BUILTIN_CMD cp;
+BUILTIN_CMD rm;
+BUILTIN_CMD removedir;
 
 #endif

@@ -1,6 +1,6 @@
 #include "./common.h"
 
-#define MAX_COMMAND_LENGTH 100
+#define MAX_COMMAND_LENGTH 20
 
 extern ChildPID CPID;
 USERINFO user;
@@ -26,9 +26,11 @@ int main(int argc,char *argv[]) {
     }
 
     while(1) {
+        fflush(stdout);
         SetPS1(PS1,&user);
         line = readline(PS1);
         SplitCmdInput(line);
+        add_history(line);
         free(line);
     }
 }

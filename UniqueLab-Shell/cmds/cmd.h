@@ -23,6 +23,7 @@ int POR(int argc,char** argv);
 int Rout(int argc,char** argv);
 int Rin(int argc,char** argv);
 int Pip(int argc,char** argv);
+int SplitForPOR(int argc,char** argv,char** argvPOR1,char** argvPOR2);
 //int SplitOptions(int argc,char** argv,int* num,char** opts);
 
 #endif
