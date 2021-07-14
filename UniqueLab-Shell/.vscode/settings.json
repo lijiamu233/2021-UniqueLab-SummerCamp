@@ -1,0 +1,10 @@
+{
+    "C_Cpp.errorSquiggles": "Disabled",
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/wbj820/2021Unique-lab-summer/UniqueLab-Shell",
+            "binaryPath": "/home/wbj820/2021Unique-lab-summer/UniqueLab-Shell/shell",
+            "binaryArgs": []
+        }
+    ]
+}

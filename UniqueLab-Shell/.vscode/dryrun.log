@@ -1,0 +1,5 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/wbj820/2021Unique-lab-summer/UniqueLab-Shell'
+gcc ./main.o   -o ./shell -lreadline
+make: Leaving directory '/home/wbj820/2021Unique-lab-summer/UniqueLab-Shell'
+ 

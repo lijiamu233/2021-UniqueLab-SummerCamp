@@ -1,0 +1,15 @@
+builtin
+cmds
+common.h
+compile
+hello
+hello.c
+hello.o
+lsslllllllll
+ls.t
+main.c
+Makefile
+shell
+test
+test.c
+test.o

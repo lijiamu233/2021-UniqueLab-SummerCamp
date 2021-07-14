@@ -19,7 +19,6 @@ int main(int argc,char *argv[]) {
 
     //HANDLE_SIG_FNC_TYPE *CtrlC = &HandleCtrlC,CtrlD = &HandleCtrlD;
     signal(SIGINT,HandleCtrlC);
-    signal(EOF,HandleCtrlD);
 
 
     if(init()) {
@@ -35,9 +34,6 @@ int main(int argc,char *argv[]) {
 }
 
 void HandleCtrlC(int sig) {
-    pid_t PID;
-    int status;
-    PID = waitpid(-1,&status,0);
     if(CPID.status==0) {
         printf("\n");
         printf("不是子程序\n");
@@ -49,8 +45,4 @@ void HandleCtrlC(int sig) {
         //printf("%s",PS1);
     }
     return ;
-}
-
-void HandleCtrlD(int sig) {
-    exit(0);
 }

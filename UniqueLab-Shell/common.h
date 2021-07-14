@@ -28,6 +28,5 @@ typedef struct ChildPID
 
 
 void HandleCtrlC(int sig);
-void HandleCtrlD(int sig);
 
 #endif

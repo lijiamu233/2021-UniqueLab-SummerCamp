@@ -16,5 +16,13 @@ typedef struct USERINFO
 int SplitCmdInput(char*);
 int SetPS1(char*,USERINFO*);
 int CmdParser(int,char**);
+void DestProg(char** argv,int num);
+int IfRedPip(int argc,char** argv);
+int ExeCmd(int cmdnum,int argc,char** argv);
+int POR(int argc,char** argv);
+int Rout(int argc,char** argv);
+int Rin(int argc,char** argv);
+int Pip(int argc,char** argv);
+//int SplitOptions(int argc,char** argv,int* num,char** opts);
 
 #endif

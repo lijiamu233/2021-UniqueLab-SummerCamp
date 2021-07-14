@@ -17,5 +17,6 @@ BUILTIN_CMD pwd;
 BUILTIN_CMD cd;
 BUILTIN_CMD echo;
 BUILTIN_CMD touch;
+BUILTIN_CMD cp;
 
 #endif
