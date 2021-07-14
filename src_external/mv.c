@@ -56,7 +56,7 @@ void main(int argc, char **argv)
         p = argv[i] + 1;
         while (p = strchr(p + 1, '/'))
             ans = p;
-        strcat(dst, ans + 1); ///以上部分合成拷贝终点名称
+        strcat(dst, ans + 1); //以上部分合成拷贝终点名称
         execute_mv(argv[i], dst);
     }
 }
