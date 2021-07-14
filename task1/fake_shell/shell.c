@@ -13,6 +13,7 @@
 #include "direction_and_pipe.h"
 #include "parse.h"
 #include "external.h"
+typedef void (* signal_handler)(int);
 int pipeline_or_direction(char *string){
         int input_direction=0;
         int output_dirction=0;
@@ -38,15 +39,15 @@ int pipeline_or_direction(char *string){
         }else{
             parse_for_direction_and_pipeline(input,order,string);
             if(input_direction==1){
-               
-                input_direct(input,order);  
+
+                input_direct(input,order);
             }else if(pipeline==1)
             {
-         
+
                 pip(input,order);
             }else if (output_dirction==1)
             {
-                
+
                 output_direct(input,order);
             }
             return 0;
@@ -59,15 +60,15 @@ void command(char input[],char order[],char *string){
         }
         if(strcmp(input,"exit")==0){
             exit(0);
-           
+
         }else if (strcmp(input,"pwd")==0){
             pwd();
-            
+
         }else if (strcmp(input,"echo")==0){
             echo(order);
-            
+
         }else if(strcmp(input,"cd")==0){
-            cd(order);          
+            cd(order);
         }else if(strcmp(input,"export")==0){
             export_(order);
         }else if(strcmp(input,"ls")==0){
@@ -76,6 +77,8 @@ void command(char input[],char order[],char *string){
             touch(order);
         }else if(strcmp(input,"mkdir")==0){
             mkdirectory(order);
+        }else if(strcmp(input,"cp")==0){
+
         }
 }
 void loop(){
@@ -83,17 +86,20 @@ void loop(){
     {
         char *string;
         string=readline("[new shell]");
-        if(string[0]==EOF)
+        if(string==NULL)
             exit(0);
-        char input[20];        
-        char order[20];       
+        char input[20];
+        char order[20];
         parse(input,order,string);
         command(input,order,string);
     }
 }
-
+void ctrl_c(){
+    //printf("\n");
+    return;
+}
 
 int main(){
-    signal(SIGINT,loop);
+    signal(SIGINT,ctrl_c);
     loop();
 }
