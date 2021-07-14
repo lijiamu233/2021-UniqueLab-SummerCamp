@@ -6,7 +6,7 @@ void show_ls(char filename[]){
    struct dirent* dirent_ptr;
    
    if((dir_ptr=opendir(filename))==NULL){
-       printf("failed to open this dirctory");
+       printf("failed to open this dirctory\n");
    }else{      
         while((dirent_ptr=readdir(dir_ptr))!=NULL){
             printf("%s\n",dirent_ptr->d_name);
