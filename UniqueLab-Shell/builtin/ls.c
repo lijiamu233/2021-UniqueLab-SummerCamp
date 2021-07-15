@@ -1,6 +1,9 @@
 #include "../common.h"
 
 int ls(int argc,char** argv) {
+    // printf("ls enter\n");
+    // printf("%d\n",argc);
+    // for(int i=0;i<argc;i++) printf("%s\n",argv[i]);      //--color=auto?
     DIR *dir;
     struct dirent *rent;
     struct stat fpstat;
@@ -57,4 +60,9 @@ int ls(int argc,char** argv) {
     }
     } else printf("ERROR:为定义的选项！\n");
     closedir(dir);
+}
+
+int main(int argc,char** argv) {
+    ls(argc,argv);
+    return 0;
 }

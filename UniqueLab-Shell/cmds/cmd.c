@@ -94,8 +94,9 @@ int ExeCmd(int cmdnum,int argc,char** argv) {
             }
         }
     } else {
-        //PID = fork();
-        switch (cmdnum)
+        PID = fork();
+        if(PID==0) {
+            switch (cmdnum)
         {
         case 1:
             pwd(argc,argv);
@@ -106,29 +107,33 @@ int ExeCmd(int cmdnum,int argc,char** argv) {
         case 3:
             exit(0);
             break;
-        case 4:
-            ls(argc,argv);
-            break;
+        // case 4:
+        //     ls(argc,argv);
+        //     break;
         case 5:
             cd(argc,argv);
             break;
-        case 6:
-            touch(argc,argv);
-            break;
-        case 7:
-            makedir(argc,argv);
-            break;
-        case 8:
-            cp(argc,argv);
-            break;
-        case 9:
-            rm(argc,argv);
-            break;
+        // case 6:
+        //     touch(argc,argv);
+        //     break;
+        // case 7:
+        //     makedir(argc,argv);
+        //     break;
+        // case 8:
+        //     cp(argc,argv);
+        //     break;
+        // case 9:
+        //     rm(argc,argv);
+        //     break;
         
         default:
-        printf("Undefined command!\n");
+            if(execvp(argv[0],argv)==-1) printf("Undefined command!\n");
             break;
         }
+        } else if(PID>0) {
+            waitpid(PID,&status,0);
+        }
+        
     }
     return 0;
 }
@@ -228,13 +233,13 @@ int Rin(int argc,char** argv) {
         break;
     case 0:
         {int fd=0;
-        // if(now2[0][0]!='.'&&now2[0][0]!='/') {
-        //     char path[50];
-        //     strcpy(path,"./");
-        //     strcat(path,now2[0]);
-        //     strcpy(now2[0],path);
-        //     // printf("path prod complete");
-        // }
+        if(now2[0][0]!='.'&&now2[0][0]!='/') {
+            char path[50];
+            strcpy(path,"./");
+            strcat(path,now2[0]);
+            strcpy(now2[0],path);
+            // printf("path prod complete");
+        }
         printf("i=%d\t$$%s$$\n",i,*now2);
         fd = open(now2[0],O_RDONLY);
         if(fd=-1) {

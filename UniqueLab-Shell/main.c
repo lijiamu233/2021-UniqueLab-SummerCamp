@@ -7,6 +7,14 @@ USERINFO user;
 char PS1[MAX_PS1_LENGTH];
 
 int init(){
+    char *path,newpath[500];
+    path = getenv("PATH");
+    strcpy(newpath,"/home/wbj820/2021Unique-lab-summer/UniqueLab-Shell/compile:");
+    strcat(newpath,path);
+    if(setenv("PATH",newpath,1)==-1) {
+        printf("ERROR:环境变量设置失败！\n");
+        return 1;
+    }
     printf("Shell init complete!\nPress Ctrl-D to exit\n");
     return 0;
 }
@@ -38,7 +46,7 @@ int main(int argc,char *argv[]) {
 void HandleCtrlC(int sig) {
     if(CPID.status==0) {
         printf("\n");
-        printf("不是子程序\n");
+        //printf("不是子程序\n");
         printf("%s",PS1);
     } else {
         kill(CPID.PID,SIGINT);
