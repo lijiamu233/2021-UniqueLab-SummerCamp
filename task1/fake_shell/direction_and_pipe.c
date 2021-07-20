@@ -26,6 +26,10 @@ void input_direct(char input[],char order[]){
     case 0:{
         int fd;
         fd=open(order,O_RDONLY,0644);
+        if(fd==-1){
+            printf("failed to open %s\n",order);
+            break;
+        }
         dup2(fd,STDIN_FILENO);
         int j=0;
         j=execvp(argv[0],argv);

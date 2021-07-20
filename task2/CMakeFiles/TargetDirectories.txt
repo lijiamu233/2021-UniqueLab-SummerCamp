@@ -1,0 +1,6 @@
+/home/mch/Unique/2021-UniqueLab-SummerCamp/task2/CMakeFiles/rebuild_cache.dir
+/home/mch/Unique/2021-UniqueLab-SummerCamp/task2/CMakeFiles/edit_cache.dir
+/home/mch/Unique/2021-UniqueLab-SummerCamp/task2/src/CMakeFiles/rebuild_cache.dir
+/home/mch/Unique/2021-UniqueLab-SummerCamp/task2/src/CMakeFiles/priority_queue.dir
+/home/mch/Unique/2021-UniqueLab-SummerCamp/task2/src/CMakeFiles/edit_cache.dir
+/home/mch/Unique/2021-UniqueLab-SummerCamp/task2/src/CMakeFiles/set.dir

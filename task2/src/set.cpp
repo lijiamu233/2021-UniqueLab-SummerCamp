@@ -4,8 +4,8 @@
 using namespace lfp;
 
 int main() {
-	int ia[5] = { 0, 1, 2, 3, 4 };
-	set<int> iset(ia, ia + 5);
+	int ia[5] = { 0, 1, 2 ,4 };
+	set<int> iset(ia,ia+4);
 
 	std::cout << "size() = " << iset.size() << "  count(3) = " << iset.count(3) << std::endl;
 	iset.insert(3);
@@ -19,10 +19,8 @@ int main() {
 	for (; it != iset.end(); ++it)
 		std::cout << *it << " ";
 	std::cout << std::endl << std::endl;
-
-
-
-	iset.erase(iset.begin(), iset.find(3));	 // [)
+	std::cout << "empty() = " << iset.empty() << std::endl;
+	iset.erase(iset.find(3));	 // [)
 	std::cout << "size() = " << iset.size() << std::endl;
 	it = iset.begin();
 	auto end = iset.end();
@@ -31,9 +29,9 @@ int main() {
 		++it;
 	}
 	std::cout << std::endl << std::endl;
-
-
-
+	iset.clear();
+	std::cout << "size() = " << iset.size() << std::endl;
+	std::cout << "empty() = " << iset.empty() << std::endl;
 	
 	iset.erase(iset.begin(), iset.end());
 	std::cout << "size() = " << iset.size() << std::endl;
