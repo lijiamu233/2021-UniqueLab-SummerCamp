@@ -2,25 +2,26 @@
 #include "vector.h"
 #include "priority_queue.h"
 #include <iostream>
-
+#include <stdlib.h>
+#include <time.h>
 using namespace lfp;
 
 int main() {
-	//默认大根堆
-	priority_queue<int> ipq = { 50, 10, 90, 30, 70, 40, 80, 60, 20 };
-	while (ipq.size() > 0) {
-		std::cout << "ipq.size() = " << ipq.size() << "  ipq.top() = " << ipq.top() << std::endl;
-		ipq.pop();
+	srand((unsigned)time(NULL));
+	int length=(rand()%(20))+1;	
+	priority_queue<int, vector<int>, greater<int>> ipq2;
+	std::cout << "empty()=" << ipq2.empty() <<std::endl;
+	for(int i=0;i<length;i++){
+		ipq2.push((rand()%(1000))+1);
+		std::cout << "ipq2.size() = " << ipq2.size() << "  ipq2.top() = " << ipq2.top()<< "empty()=" << ipq2.empty() << std::endl;
 	}
-	std::cout << std::endl << std::endl;
-
-	
-	//小根堆
-	priority_queue<int, vector<int>, greater<int>> ipq2 = { 50, 10, 90, 30, 70, 40, 80, 60, 20 };
+	std::cout << "empty()=" << ipq2.empty() <<std::endl;
+	std::cout << "size()=" << ipq2.size() <<std::endl;
 	while (ipq2.size() > 0) {
-		std::cout << "ipq2.size() = " << ipq2.size() << "  ipq2.top() = " << ipq2.top() << std::endl;
+		std::cout << "ipq2.size() = " << ipq2.size() << "  ipq2.top() = " << ipq2.top()<< "empty()=" << ipq2.empty() << std::endl;
 		ipq2.pop();
 	}
+	std::cout << "empty()=" << ipq2.empty() <<std::endl;
 	std::cout << std::endl << std::endl;
 
 	return 0;

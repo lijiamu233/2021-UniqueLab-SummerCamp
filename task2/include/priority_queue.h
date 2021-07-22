@@ -4,11 +4,11 @@
 #include "algobase.h"
 #include "vector.h"
 #include "heap.h"
-#include <initializer_list>		//for 列表初始化
+#include <initializer_list>		
 
 namespace lfp {
 
-	//默认使用less，即大根堆
+	
 	template<class T, class Container = vector<T>, class Compare = less<T>>
 	class priority_queue {
 	public:
@@ -17,8 +17,8 @@ namespace lfp {
 		typedef typename Container::reference			reference;
 		typedef typename Container::const_reference		const_reference;
 	protected:
-		Container cont;		//底层容器
-		Compare comp;		//权值比较法则
+		Container cont;		
+		Compare comp;		
 	public:
 		priority_queue() { }
 		priority_queue(const vector<T>& x) : cont(x) {
@@ -32,7 +32,7 @@ namespace lfp {
 			make_heap(cont.begin(), cont.end(), comp);
 		}
 
-		bool empty() const { return cont.empty(); }
+		bool empty() const { return !cont.size(); }
 		size_type size() const { return cont.size(); }
 
 		const_reference top() const { return cont.front(); }
@@ -60,6 +60,6 @@ namespace lfp {
 		}
 	};
 	
-} // end of namespace lfp
+} 
 
-#endif	//! _STL_PRIORITY_QUEUE_H_
+#endif	

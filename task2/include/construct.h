@@ -6,7 +6,7 @@
 namespace lfp{
     template<typename T1, typename T2>
 	inline void construct(T1* p, const T2& value) {
-		new(p) T1(value);  //placement new（在已申请的内存p处构造对象），调用T1::T1(value)
+		new(p) T1(value);  
 	}
     template<typename T>
 	inline void destroy(T* p) {
