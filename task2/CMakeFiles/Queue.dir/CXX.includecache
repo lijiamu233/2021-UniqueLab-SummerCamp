@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/wbj820/2021Unique-lab-summer/2021-UniqueLab-SummerCamp/task2/heap.h
+iterator.h
+/home/wbj820/2021Unique-lab-summer/2021-UniqueLab-SummerCamp/task2/iterator.h
+
+/home/wbj820/2021Unique-lab-summer/2021-UniqueLab-SummerCamp/task2/iterator.h
+cstddef
+-
+
+/home/wbj820/2021Unique-lab-summer/2021-UniqueLab-SummerCamp/task2/priority_queue.cpp
+algobase.h
+/home/wbj820/2021Unique-lab-summer/2021-UniqueLab-SummerCamp/task2/algobase.h
+vector.h
+/home/wbj820/2021Unique-lab-summer/2021-UniqueLab-SummerCamp/task2/vector.h
+priority_queue.h
+/home/wbj820/2021Unique-lab-summer/2021-UniqueLab-SummerCamp/task2/priority_queue.h
+iostream
+-
+
+/home/wbj820/2021Unique-lab-summer/2021-UniqueLab-SummerCamp/task2/priority_queue.h
+algobase.h
+/home/wbj820/2021Unique-lab-summer/2021-UniqueLab-SummerCamp/task2/algobase.h
+vector.h
+/home/wbj820/2021Unique-lab-summer/2021-UniqueLab-SummerCamp/task2/vector.h
+heap.h
+/home/wbj820/2021Unique-lab-summer/2021-UniqueLab-SummerCamp/task2/heap.h
+initializer_list
+-
+
