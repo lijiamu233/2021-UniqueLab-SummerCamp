@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.py": "python",
+        "*.c": "c",
+        "type_traits": "cpp",
+        "xutility": "cpp",
+        "iostream": "cpp",
+        "xtree": "cpp"
+    }
+}
