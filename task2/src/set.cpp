@@ -1,8 +1,10 @@
+#define CATCH_CONFIG_MAIN
+
 #include "set.h"
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
-
+#include <catch2/catch.hpp>
 using namespace lfp;
 
 int main() {
