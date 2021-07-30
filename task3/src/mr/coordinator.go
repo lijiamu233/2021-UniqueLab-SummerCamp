@@ -1,14 +1,11 @@
 package mr
 
 import (
-	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"net/rpc"
 	"os"
-	"sort"
-	"strconv"
 	"sync"
 	"time"
 )
@@ -43,7 +40,7 @@ type Coordinator struct {
 
 // Your code here -- RPC handlers for the worker to call.
 func (c *Coordinator) GetTask(args *Args, reply *Reply) error {
-	if !c.MapAllStart {
+	if !c.MapAllStart && !c.MapDone {
 		reply.TaskType = MapType
 		c.mutex.Lock()
 		for i := 0; i < len(c.File); i++ {
@@ -51,7 +48,7 @@ func (c *Coordinator) GetTask(args *Args, reply *Reply) error {
 				c.MapIndex = i
 				c.MapStart[i] = true
 				c.MapStartTime[i] = time.Now()
-				fmt.Println("map" + " " + strconv.Itoa(i) + " " + "start")
+				//fmt.Println("map" + " " + strconv.Itoa(i) + " " + "start")
 				break
 			}
 		}
@@ -79,13 +76,12 @@ func (c *Coordinator) GetTask(args *Args, reply *Reply) error {
 			}
 		}
 
-		fmt.Println("reduce" + " " + strconv.Itoa(c.ReduceIndex) + " " + "start")
+		//fmt.Println("reduce" + " " + strconv.Itoa(c.ReduceIndex) + " " + "start")
 		if c.ReduceIndex == 0 {
 			c.ReduceBegin = true
 		}
 		reply.TaskIndex = c.ReduceIndex
-		reply.ReduceSource = append(reply.ReduceSource, c.MapResult[reply.TaskIndex]...)
-
+		reply.FileNumber = len(c.File)
 		if c.ReduceIndex == 9 {
 			c.ReduceAllStart = true
 		}
@@ -102,74 +98,76 @@ func (c *Coordinator) GetTask(args *Args, reply *Reply) error {
 
 func (c *Coordinator) TaskDone(args *Args, reply *Reply) error {
 	if args.TaskType == MapType {
+		c.mutex.Lock()
 		if c.MapFinish[args.TaskIndex] {
+			c.mutex.Unlock()
 			return nil
 		}
-		c.mutex.Lock()
 		c.MapDoneNumber++
-		for i := 0; i < 10; i++ {
-			if len(args.MapResult[i]) == 0 {
-				break
-			}
-			for j := 0; j < len(args.MapResult[i]); j++ {
-				c.MapResult[i] = append(c.MapResult[i], args.MapResult[i][j])
-			}
-		}
 		c.MapFinish[args.TaskIndex] = true
-		fmt.Println("map" + " " + strconv.Itoa(args.TaskIndex) + " " + "finish")
+		//fmt.Println(" map task " + strconv.Itoa(args.TaskIndex) + "finish")
+		//fmt.Println("map" + " " + strconv.Itoa(args.TaskIndex) + " " + "finish")
 		if c.MapDoneNumber == len(c.File) {
 			c.MapDone = true
 		}
 		c.mutex.Unlock()
 		return nil
-	} else {
+	} else if args.TaskType == ReduceType {
+		c.mutex.Lock()
 		if c.ReduceFinish[args.TaskIndex] {
+			c.mutex.Unlock()
 			return nil
 		}
-		c.mutex.Lock()
 		c.ReduceDoneNumber++
-		for i := 0; i < args.ReduceResult.Len(); i++ {
-			temp := args.ReduceResult[i]
-			c.ReduceResult = append(c.ReduceResult, temp)
-		}
 		c.ReduceFinish[args.TaskIndex] = true
-		fmt.Println("reduce" + " " + strconv.Itoa(args.TaskIndex) + " " + "finish")
+		//fmt.Println(" reduce task " + strconv.Itoa(args.TaskIndex) + "finish")
+		//fmt.Println("reduce" + " " + strconv.Itoa(args.TaskIndex) + " " + "finish")
 		if c.ReduceDoneNumber == 10 {
 			c.ReduceDone = true
-			sort.Sort(ByKey(c.ReduceResult))
-			oname := "mr-out-new"
-			ofile, _ := os.Create(oname)
-			for i := 0; i < c.ReduceResult.Len(); i++ {
-				fmt.Fprintf(ofile, "%v %v\n", c.ReduceResult[i].Key, c.ReduceResult[i].Value)
-			}
-			ofile.Close()
 			c.AllDone = true
-			fmt.Println("task done! wait workers to exit")
+			//fmt.Println("task done! wait workers to exit")
 		}
 		c.mutex.Unlock()
+		return nil
+	} else {
 		return nil
 	}
 }
 
-func (c *Coordinator) WorkerNumber(args *Args, reply *Reply) error {
-	if args.WorkerStart {
-		c.mutex.Lock()
-		c.WorkersNumber++
-		c.mutex.Unlock()
-		fmt.Println("worker" + " " + strconv.Itoa(c.WorkersNumber) + " " + "start")
-		return nil
-	} else {
-		fmt.Println("worker" + " " + strconv.Itoa(c.WorkersNumber) + " " + "exit")
-		c.mutex.Lock()
-		c.WorkersNumber--
-		c.mutex.Unlock()
-		if c.WorkersNumber == 0 {
-			fmt.Println("all workers exit,coordinator is already to exit")
-			c.Exit = true
-			return nil
+func (m *Coordinator) Obversor() {
+	for {
+		if m.MapBegin {
+			m.mutex.Lock()
+			for i := 0; i < len(m.File); i++ {
+				if m.MapStart[i] && !m.MapFinish[i] && (time.Now().After(m.MapStartTime[i].Add(5 * time.Second))) {
+					m.MapStart[i] = false
+					m.MapAllStart = false
+				}
+			}
+			m.mutex.Unlock()
 		}
-		return nil
+		if m.ReduceBegin {
+			m.mutex.Lock()
+			for i := 0; i < 10; i++ {
+				if m.ReduceStart[i] && !m.ReduceFinish[i] && (time.Now().After(m.ReduceStartTime[i].Add(5 * time.Second))) {
+					m.ReduceStart[i] = false
+					m.ReduceAllStart = false
+				}
+			}
+			m.mutex.Unlock()
+		}
 	}
+}
+
+func (c *Coordinator) Done() bool {
+	ret := false
+
+	// Your code here.
+	if c.AllDone {
+		ret = true
+	}
+
+	return ret
 }
 
 //
@@ -224,6 +222,7 @@ func MakeCoordinator(files []string, nReduce int) *Coordinator {
 		c.ReduceStart[i] = false
 		c.ReduceFinish[i] = false
 	}
+	go c.Obversor()
 	c.server()
 	return &c
 }

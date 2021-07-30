@@ -32,6 +32,7 @@ type Reply struct {
 	AllDone      bool
 	ReduceSource ByKey
 	Wait         bool
+	FileNumber   int
 }
 
 const (

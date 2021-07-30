@@ -1,6 +1,7 @@
 package mr
 
 import (
+	"encoding/json"
 	"fmt"
 	"hash/fnv"
 	"io/ioutil"
@@ -9,7 +10,6 @@ import (
 	"os"
 	"sort"
 	"strconv"
-	"time"
 )
 
 //
@@ -41,7 +41,6 @@ func ihash(key string) int {
 func Worker(mapf func(string, string) []KeyValue, reducef func(string, []string) string) {
 
 	// Your worker implementation here.
-	WorkerStart()
 	reply := Reply{}
 	reply.AllDone = false
 	reply.ReduceNumber = 10
@@ -54,14 +53,12 @@ func Worker(mapf func(string, string) []KeyValue, reducef func(string, []string)
 			continue
 		}
 		if reply.AllDone {
-			fmt.Println("already to exit")
-			WorkerExit()
-			time.Sleep(time.Second)
 			os.Exit(0)
 		}
 		if reply.TaskType == MapType {
-			fmt.Println("get map task" + strconv.Itoa(reply.TaskIndex))
-			time.Sleep(2 * time.Second)
+			//fmt.Println("get map task" + strconv.Itoa(reply.TaskIndex))
+			//time.Sleep(2 * time.Second)
+			//fmt.Println("get map task " + strconv.Itoa(reply.TaskIndex))
 			intermediate := []KeyValue{}
 			filename := reply.FileName
 			file, err := os.Open(filename)
@@ -76,40 +73,83 @@ func Worker(mapf func(string, string) []KeyValue, reducef func(string, []string)
 			kva := mapf(filename, string(content))
 			intermediate = append(intermediate, kva...)
 			sort.Sort(ByKey(intermediate))
-			maptoreduce := [10]ByKey{}
-			for i := 0; i < len(intermediate); i++ {
-				reduce_index := ihash(intermediate[i].Key) % 10
-				temp := intermediate[i]
-				maptoreduce[reduce_index] = append(maptoreduce[reduce_index], temp)
+			outprefix := "mr-"
+			outprefix += strconv.Itoa(reply.TaskIndex)
+			outprefix += "-"
+
+			map_result := make([]ByKey, reply.ReduceNumber)
+			for _, kv := range intermediate {
+				outindex := ihash(kv.Key) % reply.ReduceNumber
+				map_result[outindex] = append(map_result[outindex], kv)
 			}
-			fmt.Println("finish map task" + strconv.Itoa(reply.TaskIndex))
-			ReportToCoordinatorForMap(reply, maptoreduce)
+			for i := 0; i < reply.ReduceNumber; i++ {
+				outname := outprefix + strconv.Itoa(i)
+				newfile, _ := os.Create(outname)
+				enc := json.NewEncoder(newfile)
+				for _, kv := range map_result[i] {
+					enc.Encode(&kv)
+				}
+				newfile.Close()
+			}
+			//fmt.Println("finish map task" + strconv.Itoa(reply.TaskIndex))
+			ReportToCoordinatorForMap(reply)
 		} else if reply.TaskType == ReduceType {
-			fmt.Println("get reduce task" + strconv.Itoa(reply.TaskIndex))
-			time.Sleep(2 * time.Second)
-			sort.Sort(ByKey(reply.ReduceSource))
-			reduceresult := []KeyValue{}
-			for i := 0; i < len(reply.ReduceSource); {
+			//fmt.Println("get reduce task" + strconv.Itoa(reply.TaskIndex))
+			//time.Sleep(2 * time.Second)
+			//fmt.Println("get reduce task " + strconv.Itoa(reply.TaskIndex))
+			outname := "mr-out-" + strconv.Itoa(reply.TaskIndex)
+			innameprefix := "mr-"
+			innamesuffix := "-" + strconv.Itoa(reply.TaskIndex)
+			intermediate := []KeyValue{}
+			for index := 0; index < reply.FileNumber; index++ {
+				inname := innameprefix + strconv.Itoa(index) + innamesuffix
+				file, err := os.Open(inname)
+				if err != nil {
+					fmt.Printf("Open intermediate file %v failed: %v\n", inname, err)
+					panic("Open file error")
+				}
+				dec := json.NewDecoder(file)
+				for {
+					var kv KeyValue
+					if err := dec.Decode(&kv); err != nil {
+						//fmt.Printf("%v\n", err)
+						break
+					}
+					//fmt.Printf("%v\n", kv)
+					intermediate = append(intermediate, kv)
+				}
+				file.Close()
+			}
+			sort.Sort(ByKey(intermediate))
+			ofile, err := os.Create(outname)
+			if err != nil {
+				fmt.Printf("Create output file %v failed: %v\n", outname, err)
+				panic("Create file error")
+			}
+			i := 0
+			for i < len(intermediate) {
 				j := i + 1
-				for j < len(reply.ReduceSource) && reply.ReduceSource[j].Key == reply.ReduceSource[i].Key {
+				for j < len(intermediate) && intermediate[j].Key == intermediate[i].Key {
 					j++
 				}
 				values := []string{}
 				for k := i; k < j; k++ {
-					temp := reply.ReduceSource[k].Value
-					values = append(values, temp)
+					values = append(values, intermediate[k].Value)
 				}
-				output := reducef(reply.ReduceSource[i].Key, values)
-				reduce_result_of_one_key := KeyValue{reply.ReduceSource[i].Key, output}
-				reduceresult = append(reduceresult, reduce_result_of_one_key)
+				output := reducef(intermediate[i].Key, values)
+
+				// this is the correct format for each line of Reduce output.
+				fmt.Fprintf(ofile, "%v %v\n", intermediate[i].Key, output)
+
 				i = j
 			}
-			fmt.Println("finish reduce task" + strconv.Itoa(reply.TaskIndex))
-			ReportToCoordinatorForReduce(reply, reduceresult)
+			ofile.Close()
+			//fmt.Println("finish reduce task" + strconv.Itoa(reply.TaskIndex))
+			ReportToCoordinatorForReduce(reply)
 		} else {
 			fmt.Println("failed to get task")
 		}
-		time.Sleep(5 * time.Second)
+		//time.Sleep(5 * time.Second)
 	}
 	// uncomment to send the Example RPC to the coordinator.
 	// CallExample()
@@ -131,43 +171,21 @@ func CallCoordinator() (reply Reply) {
 	return reply
 }
 
-func ReportToCoordinatorForMap(arg Reply, mapresult [10]ByKey) {
+func ReportToCoordinatorForMap(arg Reply) {
 	args := Args{}
 	reply := Reply{}
 	args.TaskType = arg.TaskType
 	args.TaskIndex = arg.TaskIndex
-	for i := 0; i < 10; i++ {
-		if len(mapresult[i]) == 0 {
-			break
-		}
-		for j := 0; j < len(mapresult[i]); j++ {
-			args.MapResult[i] = append(args.MapResult[i], mapresult[i][j])
-		}
-	}
+
 	call("Coordinator.TaskDone", &args, &reply)
 }
 
-func ReportToCoordinatorForReduce(arg Reply, reduceresult ByKey) {
+func ReportToCoordinatorForReduce(arg Reply) {
 	args := Args{}
 	reply := Reply{}
 	args.TaskType = arg.TaskType
 	args.TaskIndex = arg.TaskIndex
-	args.ReduceResult = reduceresult
 	call("Coordinator.TaskDone", &args, &reply)
-}
-
-func WorkerStart() {
-	args := Args{}
-	reply := Reply{}
-	args.WorkerStart = true
-	call("Coordinator.WorkerNumber", &args, &reply)
-}
-
-func WorkerExit() {
-	args := Args{}
-	reply := Reply{}
-	args.WorkerStart = false
-	call("Coordinator.WorkerNumber", &args, &reply)
 }
 
 //

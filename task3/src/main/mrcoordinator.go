@@ -24,30 +24,10 @@ func main() {
 	}
 
 	m := mr.MakeCoordinator(os.Args[1:], 10)
-	for {
-		if m.MapBegin {
-			for i := 0; i < len(m.File); i++ {
-				if m.MapStart[i] && !m.MapFinish[i] && (time.Now().After(m.MapStartTime[i].Add(4 * time.Second))) {
-					m.MapStart[i] = false
-					m.MapAllStart = false
-					m.WorkersNumber--
-				}
-			}
-		}
-		if m.ReduceBegin {
-			for i := 0; i < 10; i++ {
-				if m.ReduceStart[i] && !m.ReduceFinish[i] && (time.Now().After(m.ReduceStartTime[i].Add(4 * time.Second))) {
-					m.ReduceStart[i] = false
-					m.ReduceAllStart = false
-					m.WorkersNumber--
-				}
-			}
-		}
-		if m.Exit {
-			time.Sleep(time.Second)
-			os.Exit(0)
-		}
+	for m.Done() == false {
 		time.Sleep(time.Second)
 	}
+
+	time.Sleep(time.Second)
 
 }
